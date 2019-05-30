@@ -93,12 +93,16 @@ public class LockInstance {
 	public void releaseLock(String key) {
 		ReentrantLock stripsLockReentrantLock = stripsLock[Math.abs(key
 				.hashCode()) % stripsNumber];
+		stripsLockReentrantLock.lock();
 		ReentrantLock reentrantLock = keysMap.get(key);
 		if (reentrantLock != null && reentrantLock.isHeldByCurrentThread()) {
 			reentrantLock.unlock();
 		}
+		
+		keysMap.remove(key);
 
 		if (stripsLockReentrantLock.isHeldByCurrentThread()) {
+			stripsLockReentrantLock.unlock();
 			stripsLockReentrantLock.unlock();
 		}
 
